@@ -1,0 +1,418 @@
+/* DevConnect - Темная тема и дополнительные стили */
+
+/* Темная тема */
+.dark-theme {
+    --text-primary: #f0f6fc;
+    --text-secondary: #8b949e;
+    --card-background: rgba(13, 17, 23, 0.95);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --background-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme {
+    background: var(--background-gradient);
+    color: var(--text-primary);
+}
+
+.dark-theme .form-control {
+    background: rgba(13, 17, 23, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.dark-theme .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.dark-theme .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.dark-theme .chat-sidebar {
+    background: rgba(13, 17, 23, 0.8);
+    border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .chat-header {
+    background: rgba(13, 17, 23, 0.9);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .chat-input {
+    background: rgba(13, 17, 23, 0.9);
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .chat-input input {
+    background: rgba(13, 17, 23, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.dark-theme .chat-input textarea {
+    background: rgba(13, 17, 23, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.dark-theme .chat-input input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.dark-theme .chat-input textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.dark-theme .skill-tag {
+    background: rgba(102, 126, 234, 0.2);
+    color: #8bb4ff;
+}
+
+.dark-theme .message-content {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+.dark-theme .message.own .message-content {
+    background: rgba(102, 126, 234, 0.25);
+}
+
+.dark-theme .alert-danger {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.dark-theme .alert-success {
+    background: rgba(40, 167, 69, 0.2);
+    color: #51cf66;
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+/* Стили для частиц */
+.particle {
+    position: absolute;
+    pointer-events: none;
+    animation: particleFloat 4s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+        opacity: 0.7;
+    }
+    50% { 
+        transform: translateY(-20px) rotate(180deg); 
+        opacity: 1;
+    }
+}
+
+/* Стили для волн */
+.wave {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+@keyframes waveExpand {
+    0% { 
+        transform: scale(0); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: scale(1); 
+        opacity: 0; 
+    }
+}
+
+/* Стили для индикатора силы пароля */
+.password-strength {
+    position: relative;
+    overflow: hidden;
+}
+
+.strength-bar {
+    transition: all 0.3s ease;
+}
+
+/* Стили для toast уведомлений */
+.toast {
+    position: relative;
+    overflow: hidden;
+}
+
+.toast::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: toastShimmer 2s infinite;
+}
+
+@keyframes toastShimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Стили для модальных окон */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--card-background);
+    border-radius: var(--border-radius-large);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--card-border);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+/* Стили для прогресс-баров */
+.progress {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Стили для загрузчиков */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    animation: spin 1s ease-in-out infinite;
+}
+
+.loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+/* Стили для карточек с эффектами */
+.card-hover {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-heavy);
+}
+
+.card-magnetic {
+    transition: transform 0.3s ease;
+}
+
+.card-magnetic:hover {
+    transform: perspective(1000px) rotateX(5deg) rotateY(5deg);
+}
+
+/* Стили для кнопок с эффектами */
+.btn-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ripple::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-ripple:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Стили для инпутов с эффектами */
+.input-focus {
+    transition: all 0.3s ease;
+}
+
+.input-focus:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Стили для аватаров с эффектами */
+.avatar-hover {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.avatar-hover:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Стили для навигации */
+.nav-link {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link.active::after {
+    width: 100%;
+}
+
+/* Стили для скроллбаров */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8, #6a4190);
+}
+
+/* Стили для темной темы скроллбаров */
+.dark-theme .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Стили для адаптивности */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+    
+    .card-magnetic:hover {
+        transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 1rem;
+    }
+    
+    .modal-title {
+        font-size: 1.2rem;
+    }
+}
+
+/* Стили для печати */
+@media print {
+    .modal,
+    .toast,
+    .particle,
+    .wave {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+}

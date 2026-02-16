@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Чат с {{ other_user.username }} - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in" data-user-id="{{ current_user.id }}" data-username="{{ current_user.username }}">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <a href="{{ url_for('chats') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Назад к чатам
+        </a>
+        <div class="user-avatar" style="width: 50px; height: 50px; font-size: 1.2rem; overflow:hidden;">
+            {% if other_user.avatar_url %}
+                <img src="{{ other_user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            {% else %}
+                {{ other_user.username[0].upper() }}
+            {% endif %}
+        </div>
+        <div>
+            <h2 style="color: #24292f; margin-bottom: 0.25rem;">{{ other_user.username }}</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="status-dot {% if not other_user.is_online %}offline{% endif %}"></span>
+                <span style="font-size: 0.9rem; color: #656d76;">
+                    {% if other_user.is_online %}
+                        Онлайн
+                    {% else %}
+                        {% if other_user.last_seen %}
+                            Был в сети {{ other_user.last_seen.strftime('%d.%m.%Y в %H:%M') }}
+                        {% else %}
+                            Был в сети недавно
+                        {% endif %}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-container" style="height: 500px;">
+        <div class="chat-main">
+            <div class="chat-messages" id="messages-container">
+                {% for message in messages %}
+                <div class="message {% if message.sender_id == current_user.id %}own{% endif %}">
+                    <div class="message-content">
+                        {{ message.content }}
+                        <div class="message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="typing-indicator" style="display:none; font-size: 0.85rem; color: #656d76; margin: 0.5rem 0 0.25rem 0;"></div>
+            
+            <div class="chat-input">
+                <form id="message-form">
+                    <input type="hidden" id="chat-id" value="{{ chat_id }}">
+                    <textarea id="message-input" placeholder="Напишите сообщение..." rows="1" style="resize:none; overflow:hidden;" autocomplete="off" autofocus></textarea>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль {{ user.username }} - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in">
+    <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem;">
+        <div class="user-avatar" style="width: 100px; height: 100px; font-size: 2.5rem; overflow:hidden;">
+            {% if user.avatar_url %}
+                <img src="{{ user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            {% else %}
+                {{ user.username[0].upper() }}
+            {% endif %}
+        </div>
+        
+        <div style="flex: 1;">
+            <h1 style="color: #24292f; margin-bottom: 0.5rem;">{{ user.username }}</h1>
+            
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="status-dot {% if not user.is_online %}offline{% endif %}"></span>
+                    <span style="font-size: 0.9rem; color: #656d76;">
+                        {% if user.is_online %}
+                            Онлайн
+                        {% else %}
+                            Был в сети {{ user.last_seen.strftime('%d.%m.%Y в %H:%M') }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div style="font-size: 0.9rem; color: #656d76;">
+                    <i class="fas fa-calendar"></i> Регистрация: {{ user.created_at.strftime('%d.%m.%Y') }}
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-primary">
+                    <i class="fas fa-comments"></i> Написать сообщение
+                </a>
+                <a href="{{ url_for('search') }}" class="btn btn-secondary">
+                    <i class="fas fa-search"></i> Найти похожих
+                </a>
+                <a href="{{ url_for('users') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Назад к списку
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <!-- Основная информация -->
+    <div>
+        {% if user.bio %}
+        <div class="card fade-in">
+            <h2 style="color: #24292f; margin-bottom: 1rem;">
+                <i class="fas fa-user"></i> О себе
+            </h2>
+            <p style="color: #656d76; line-height: 1.6; background: rgba(102, 126, 234, 0.05); padding: 1rem; border-radius: 8px;">
+                {{ user.bio }}
+            </p>
+        </div>
+        {% endif %}
+
+        {% if user.skills %}
+        <div class="card fade-in">
+            <h2 style="color: #24292f; margin-bottom: 1rem;">
+                <i class="fas fa-code"></i> Навыки и технологии
+            </h2>
+            <div class="user-skills">
+                {% for skill in user.skills.split(',') %}
+                <span class="skill-tag">{{ skill.strip() }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user.looking_for %}
+        <div class="card fade-in">
+            <h2 style="color: #24292f; margin-bottom: 1rem;">
+                <i class="fas fa-target"></i> Цели и интересы
+            </h2>
+            <p style="color: #656d76; background: rgba(102, 126, 234, 0.05); padding: 1rem; border-radius: 8px;">
+                {{ user.looking_for }}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Боковая панель -->
+    <div>
+        {% if user.experience_level %}
+        <div class="card fade-in">
+            <h3 style="color: #24292f; margin-bottom: 1rem;">
+                <i class="fas fa-chart-line"></i> Уровень опыта
+            </h3>
+            <div style="background: rgba(102, 126, 234, 0.05); padding: 1rem; border-radius: 8px;">
+                <div style="font-size: 1.2rem; font-weight: 600; color: #667eea; margin-bottom: 0.5rem;">
+                    {{ user.experience_level }}
+                </div>
+                <div style="font-size: 0.9rem; color: #656d76;">
+                    {% if user.experience_level == 'Новичок' %}
+                        Начинающий программист
+                    {% elif user.experience_level == 'Junior' %}
+                        1-2 года опыта
+                    {% elif user.experience_level == 'Middle' %}
+                        2-5 лет опыта
+                    {% elif user.experience_level == 'Senior' %}
+                        5+ лет опыта
+                    {% elif user.experience_level == 'Lead' %}
+                        Руководитель команды
+                    {% elif user.experience_level == 'Архитектор' %}
+                        Архитектор решений
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card fade-in">
+            <h3 style="color: #24292f; margin-bottom: 1rem;">
+                <i class="fas fa-info-circle"></i> Информация
+            </h3>
+            <div style="space-y: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: #656d76;">Статус:</span>
+                    <span style="color: {% if user.is_online %}#28a745{% else %}#6c757d{% endif %};">
+                        {% if user.is_online %}Онлайн{% else %}Оффлайн{% endif %}
+                    </span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: #656d76;">В сообществе:</span>
+                    <span style="color: #24292f;">{{ (now() - user.created_at).days }} дн.</span>
+                </div>
+                
+                {% if user.skills %}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: #656d76;">Навыков:</span>
+                    <span style="color: #24292f;">{{ user.skills.split(',')|length }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card fade-in">
+            <h3 style="color: #24292f; margin-bottom: 1rem;">
+                <i class="fas fa-handshake"></i> Действия
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-primary" style="text-align: center;">
+                    <i class="fas fa-comments"></i> Начать общение
+                </a>
+                
+                {% if user.skills %}
+                <a href="{{ url_for('search', skill=user.skills.split(',')[0].strip()) }}" class="btn btn-secondary" style="text-align: center;">
+                    <i class="fas fa-search"></i> Найти похожих
+                </a>
+                {% endif %}
+                
+                <a href="{{ url_for('users') }}" class="btn btn-secondary" style="text-align: center;">
+                    <i class="fas fa-users"></i> Все пользователи
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Похожие пользователи -->
+{% if user.skills %}
+<div class="card fade-in">
+    <h2 style="color: #24292f; margin-bottom: 1.5rem;">
+        <i class="fas fa-users"></i> Похожие пользователи
+    </h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+        {% for similar_user in similar_users[:4] %}
+        <div class="user-card hover-lift" style="padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="user-avatar" style="width: 40px; height: 40px; font-size: 1rem; margin-bottom: 0; overflow:hidden;">
+                    {% if similar_user.avatar_url %}
+                        <img src="{{ similar_user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                    {% else %}
+                        {{ similar_user.username[0].upper() }}
+                    {% endif %}
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #24292f;">
+                        <a href="{{ url_for('user_profile', user_id=similar_user.id) }}" style="color: inherit; text-decoration: none;">
+                            {{ similar_user.username }}
+                        </a>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #656d76;">
+                        <span class="status-dot {% if not similar_user.is_online %}offline{% endif %}"></span>
+                        {% if similar_user.is_online %}Онлайн{% else %}Оффлайн{% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            {% if similar_user.skills %}
+            <div class="user-skills" style="margin-bottom: 0.75rem;">
+                {% for skill in similar_user.skills.split(',')[:2] %}
+                <span class="skill-tag">{{ skill.strip() }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <a href="{{ url_for('chat', user_id=similar_user.id) }}" class="btn btn-primary" style="width: 100%; text-align: center; font-size: 0.8rem;">
+                <i class="fas fa-comments"></i> Написать
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div style="text-align: center; margin-top: 1rem;">
+        <a href="{{ url_for('search', skill=user.skills.split(',')[0].strip()) }}" class="btn btn-secondary">
+            <i class="fas fa-search"></i> Показать всех похожих
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

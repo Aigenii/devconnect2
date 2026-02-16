@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in">
+    <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem;">
+        <div class="user-avatar" style="width: 100px; height: 100px; font-size: 2.5rem; overflow:hidden;">
+            {% if current_user.avatar_url %}
+                <img src="{{ current_user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            {% else %}
+                {{ current_user.username[0].upper() }}
+            {% endif %}
+        </div>
+        
+        <div>
+            <h1 style="color: #24292f; margin-bottom: 0.5rem;">{{ current_user.username }}</h1>
+            <p style="color: #656d76; margin-bottom: 0.5rem;">
+                <i class="fas fa-envelope"></i> {{ current_user.email }}
+            </p>
+            {% if current_user.phone %}
+            <p style="color: #656d76; margin-bottom: 0.5rem;">
+                <i class="fas fa-phone"></i> {{ current_user.phone }}
+            </p>
+            {% endif %}
+            <p style="color: #656d76;">
+                <i class="fas fa-calendar"></i> Регистрация: {{ current_user.created_at.strftime('%d.%m.%Y') }}
+            </p>
+        </div>
+        
+        <div style="margin-left: auto; display:flex; gap:.5rem;">
+            <a href="{{ url_for('settings') }}" class="btn btn-secondary">
+                <i class="fas fa-gear"></i> {{ t('Настройки','Settings') }}
+            </a>
+            <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> {{ t('Редактировать профиль','Edit profile') }}
+            </a>
+        </div>
+    </div>
+
+    {% if current_user.bio %}
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: #24292f; margin-bottom: 1rem;">
+            <i class="fas fa-user"></i> О себе
+        </h3>
+        <p style="color: #656d76; line-height: 1.6; background: rgba(102, 126, 234, 0.05); padding: 1rem; border-radius: 8px;">
+            {{ current_user.bio }}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if current_user.skills %}
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: #24292f; margin-bottom: 1rem;">
+            <i class="fas fa-code"></i> Навыки
+        </h3>
+        <div class="user-skills">
+            {% for skill in current_user.skills.split(',') %}
+            <span class="skill-tag">{{ skill.strip() }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if current_user.experience_level %}
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: #24292f; margin-bottom: 1rem;">
+            <i class="fas fa-chart-line"></i> Уровень опыта
+        </h3>
+        <p style="color: #656d76; background: rgba(102, 126, 234, 0.05); padding: 1rem; border-radius: 8px;">
+            {{ current_user.experience_level }}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if current_user.looking_for %}
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: #24292f; margin-bottom: 1rem;">
+            <i class="fas fa-search"></i> Ищу
+        </h3>
+        <p style="color: #656d76; background: rgba(102, 126, 234, 0.05); padding: 1rem; border-radius: 8px;">
+            {{ current_user.looking_for }}
+        </p>
+    </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> На главную
+        </a>
+        <a href="{{ url_for('chats') }}" class="btn btn-secondary">
+            <i class="fas fa-comments"></i> Мои чаты
+        </a>
+    </div>
+</div>
+{% endblock %}

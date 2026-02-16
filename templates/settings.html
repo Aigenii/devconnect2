@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('Настройки','Settings') }} - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in" style="max-width: 560px; margin: 0 auto;">
+  <h2 style="color:#24292f; margin-bottom:1rem;">
+    <i class="fas fa-gear"></i> {{ t('Настройки','Settings') }}
+  </h2>
+
+  <form method="POST">
+    <div class="form-group">
+      <label for="lang"><i class="fas fa-language"></i> {{ t('Язык интерфейса','Interface language') }}</label>
+      <select id="lang" name="lang" class="form-control">
+        <option value="ru" {% if current_lang == 'ru' %}selected{% endif %}>Русский</option>
+        <option value="en" {% if current_lang == 'en' %}selected{% endif %}>English</option>
+      </select>
+    </div>
+
+    <div style="display:flex; gap: .5rem;">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> {{ t('Сохранить','Save') }}
+      </button>
+      <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> {{ t('Назад в профиль','Back to profile') }}
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

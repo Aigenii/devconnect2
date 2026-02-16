@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Новая вакансия — DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in" style="max-width: 760px; margin: 0 auto;">
+  <h1 style="color:#24292f; margin-bottom:1rem;"><i class="fas fa-plus"></i> Опубликовать вакансию</h1>
+  <form method="POST">
+    <div class="form-group">
+      <label for="title"><i class="fas fa-heading"></i> Заголовок</label>
+      <input id="title" name="title" class="form-control" required placeholder="Например: Нужен фронтенд‑разработчик на проект">
+    </div>
+    <div class="form-group">
+      <label for="description"><i class="fas fa-align-left"></i> Описание</label>
+      <textarea id="description" name="description" class="form-control" rows="6" required placeholder="Кратко опишите задачу, требования и формат работы"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="skills"><i class="fas fa-code"></i> Навыки (через запятую)</label>
+      <input id="skills" name="skills" class="form-control" placeholder="JavaScript, React, Node.js">
+    </div>
+    <div class="form-group">
+      <label for="budget"><i class="fas fa-money-bill"></i> Бюджет</label>
+      <input id="budget" name="budget" class="form-control" placeholder="Например: 1000$, почасовая, договорная">
+    </div>
+    <div class="form-group">
+      <label for="job_type"><i class="fas fa-filter"></i> Тип</label>
+      <select id="job_type" name="job_type" class="form-control">
+        <option value="hire">Ищу исполнителя</option>
+        <option value="work">Ищу работу</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-globe"></i> Формат</label>
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <label style="display:flex; gap:0.5rem; align-items:center;">
+          <input type="checkbox" name="is_remote" checked>
+          Удалёнка
+        </label>
+        <input name="location" class="form-control" style="max-width: 300px;" placeholder="Локация (если не удалёнка)">
+      </div>
+    </div>
+    <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+      <a href="{{ url_for('freelance_list') }}" class="btn btn-secondary">Отмена</a>
+      <button type="submit" class="btn btn-primary">Опубликовать</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

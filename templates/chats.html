@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Чаты - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in">
+    <h1 style="color: #24292f; margin-bottom: 1.5rem;">
+        <i class="fas fa-comments"></i> Мои чаты
+    </h1>
+
+    {% if chats %}
+    <div class="chat-container" style="height: 500px;">
+        <div class="chat-sidebar">
+            <div style="padding: 1rem; border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #24292f; font-size: 1.1rem;">Список чатов</h3>
+            </div>
+            
+            {% for chat in chats %}
+            <div style="padding: 1rem; border-bottom: 1px solid rgba(0, 0, 0, 0.05); cursor: pointer; transition: background 0.3s ease;" 
+                 onclick="location.href='{{ url_for('chat', user_id=chat.other_user.id) }}'">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="user-avatar" style="width: 40px; height: 40px; font-size: 1rem; overflow:hidden;">
+                        {% if chat.other_user.avatar_url %}
+                            <img src="{{ chat.other_user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                        {% else %}
+                            {{ chat.other_user.username[0].upper() }}
+                        {% endif %}
+                    </div>
+                    
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 600; color: #24292f; margin-bottom: 0.25rem;">
+                            {{ chat.other_user.username }}
+                        </div>
+                        
+                        {% if chat.last_message %}
+                        <div style="font-size: 0.85rem; color: #656d76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {% if chat.last_message.sender_id == current_user.id %}
+                                Вы: 
+                            {% endif %}
+                            {{ chat.last_message.content[:50] }}{% if chat.last_message.content|length > 50 %}...{% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <div style="font-size: 0.75rem; color: #656d76; margin-top: 0.25rem;">
+                            {{ chat.last_message_at.strftime('%d.%m %H:%M') }}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                        <span class="status-dot {% if not chat.other_user.is_online %}offline{% endif %}"></span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="chat-main">
+            <div class="chat-header" style="text-align: center;">
+                <h3 style="color: #24292f;">Выберите чат для общения</h3>
+                <p style="color: #656d76; margin-top: 0.5rem;">Нажмите на чат в боковой панели</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: #656d76;">
+        <i class="fas fa-comments" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+        <h3 style="margin-bottom: 1rem; color: #24292f;">У вас пока нет чатов</h3>
+        <p style="margin-bottom: 2rem;">Начните общение с другими программистами!</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-users"></i> Найти собеседников
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+        <i class="fas fa-home"></i> На главную
+    </a>
+    <a href="{{ url_for('profile') }}" class="btn btn-primary">
+        <i class="fas fa-user"></i> Мой профиль
+    </a>
+</div>
+
+{% endblock %}

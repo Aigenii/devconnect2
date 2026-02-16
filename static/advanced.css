@@ -1,0 +1,492 @@
+/* DevConnect - Дополнительные эффекты и стили */
+
+/* Магнитный курсор */
+.magnetic-cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    transition: transform 0.1s ease;
+}
+
+/* Эффекты скролла */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    z-index: 10001;
+    transition: width 0.1s ease;
+}
+
+/* Эффекты для инпутов */
+.input-error {
+    animation: slideInDown 0.3s ease-out;
+}
+
+.input-success {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Эффекты для модальных окон */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--card-background);
+    border-radius: var(--border-radius-large);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--card-border);
+    animation: scaleIn 0.3s ease-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Эффекты для уведомлений */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 300px;
+}
+
+.notification {
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: var(--shadow-medium);
+    animation: slideInRight 0.3s ease-out;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.notification.success {
+    border-left: 4px solid #28a745;
+}
+
+.notification.error {
+    border-left: 4px solid #dc3545;
+}
+
+.notification.warning {
+    border-left: 4px solid #ffc107;
+}
+
+.notification.info {
+    border-left: 4px solid #17a2b8;
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+}
+
+.notification.success .notification-icon {
+    color: #28a745;
+}
+
+.notification.error .notification-icon {
+    color: #dc3545;
+}
+
+.notification.warning .notification-icon {
+    color: #ffc107;
+}
+
+.notification.info .notification-icon {
+    color: #17a2b8;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.notification-message {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.notification-close:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Эффекты для карточек */
+.card-hover-effect {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.card-hover-effect:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-heavy);
+}
+
+.card-magnetic-effect {
+    transition: transform 0.3s ease;
+}
+
+.card-magnetic-effect:hover {
+    transform: perspective(1000px) rotateX(5deg) rotateY(5deg);
+}
+
+/* Эффекты для кнопок */
+.btn-hover-effect {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hover-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-hover-effect:hover::before {
+    left: 100%;
+}
+
+.btn-hover-effect:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Эффекты для аватаров */
+.avatar-hover-effect {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.avatar-hover-effect:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Эффекты для навигации */
+.nav-hover-effect {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.nav-hover-effect::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+}
+
+.nav-hover-effect:hover::after {
+    width: 100%;
+}
+
+.nav-hover-effect:hover {
+    transform: translateY(-2px);
+}
+
+/* Эффекты для форм */
+.form-focus-effect {
+    transition: all 0.3s ease;
+}
+
+.form-focus-effect:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Эффекты для чатов */
+.chat-message-effect {
+    animation: messageSlide 0.3s ease-out;
+}
+
+.chat-typing-effect {
+    position: relative;
+}
+
+.chat-typing-effect::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--primary-color);
+    animation: typingBlink 1s infinite;
+}
+
+@keyframes typingBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Эффекты для скроллбаров */
+.custom-scrollbar-effect::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar-effect::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.custom-scrollbar-effect::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.custom-scrollbar-effect::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8, #6a4190);
+}
+
+/* Эффекты для темной темы */
+.dark-theme .custom-scrollbar-effect::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .modal-content {
+    background: var(--card-background);
+    border-color: var(--card-border);
+}
+
+.dark-theme .notification {
+    background: var(--card-background);
+    border-color: var(--card-border);
+}
+
+.dark-theme .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .notification-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Эффекты для адаптивности */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+    
+    .notification-container {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+    }
+    
+    .card-hover-effect:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+    
+    .card-magnetic-effect:hover {
+        transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
+    }
+    
+    .btn-hover-effect:hover {
+        transform: translateY(-1px) scale(1.02);
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 1rem;
+    }
+    
+    .modal-title {
+        font-size: 1.2rem;
+    }
+    
+    .notification {
+        padding: 0.75rem;
+    }
+}
+
+/* Эффекты для печати */
+@media print {
+    .magnetic-cursor,
+    .scroll-progress,
+    .notification-container,
+    .modal {
+        display: none !important;
+    }
+}
+
+/* Дополнительные анимации */
+@keyframes messageSlide {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+@keyframes slideInRight {
+    from { 
+        opacity: 0; 
+        transform: translateX(100%); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+@keyframes slideOutRight {
+    from { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+    to { 
+        opacity: 0; 
+        transform: translateX(100%); 
+    }
+}
+
+@keyframes slideInDown {
+    from { 
+        opacity: 0; 
+        transform: translateY(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slideInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes scaleIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.8); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Эффекты производительности */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+
+.will-change-scroll {
+    will-change: scroll-position;
+}

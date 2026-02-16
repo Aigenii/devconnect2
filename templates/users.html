@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Все пользователи - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: #24292f; margin-bottom: 0.5rem;">
+            <i class="fas fa-users"></i> Все программисты
+        </h1>
+        <p style="color: #656d76;">Познакомься с сообществом DevConnect</p>
+    </div>
+
+    <!-- Статистика -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div style="text-align: center; padding: 1rem; background: rgba(102, 126, 234, 0.05); border-radius: 8px;">
+            <div style="font-size: 2rem; color: #667eea; margin-bottom: 0.5rem;">
+                <i class="fas fa-users"></i>
+            </div>
+            <div style="font-weight: 600; color: #24292f;">{{ users.total }} пользователей</div>
+            <div style="font-size: 0.8rem; color: #656d76;">в сообществе</div>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem; background: rgba(40, 167, 69, 0.05); border-radius: 8px;">
+            <div style="font-size: 2rem; color: #28a745; margin-bottom: 0.5rem;">
+                <i class="fas fa-circle"></i>
+            </div>
+            <div style="font-weight: 600; color: #24292f;">Онлайн</div>
+            <div style="font-size: 0.8rem; color: #656d76;">активные пользователи</div>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem; background: rgba(255, 193, 7, 0.05); border-radius: 8px;">
+            <div style="font-size: 2rem; color: #ffc107; margin-bottom: 0.5rem;">
+                <i class="fas fa-code"></i>
+            </div>
+            <div style="font-weight: 600; color: #24292f;">Навыки</div>
+            <div style="font-size: 0.8rem; color: #656d76;">разные технологии</div>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem; background: rgba(220, 53, 69, 0.05); border-radius: 8px;">
+            <div style="font-size: 2rem; color: #dc3545; margin-bottom: 0.5rem;">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <div style="font-weight: 600; color: #24292f;">Стартапы</div>
+            <div style="font-size: 0.8rem; color: #656d76;">ищут команду</div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center;">
+        <div style="flex: 1; min-width: 200px;">
+            <input type="text" id="search-input" class="form-control" placeholder="Поиск по никнейму..." style="margin: 0;">
+        </div>
+        
+        <div>
+            <select id="sort-select" class="form-control" style="margin: 0;">
+                <option value="newest">Новые пользователи</option>
+                <option value="oldest">Старые пользователи</option>
+                <option value="online">Онлайн</option>
+                <option value="username">По алфавиту</option>
+            </select>
+        </div>
+        
+        <div>
+            <button onclick="applyFilters()" class="btn btn-primary">
+                <i class="fas fa-filter"></i> Применить
+            </button>
+        </div>
+        
+        <div>
+            <a href="{{ url_for('search') }}" class="btn btn-secondary">
+                <i class="fas fa-search"></i> Расширенный поиск
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Список пользователей -->
+<div class="card fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="color: #24292f;">
+            <i class="fas fa-list"></i> Пользователи
+            {% if users.items %}
+                ({{ users.total }} {{ 'пользователь' if users.total == 1 else 'пользователей' if users.total < 5 else 'пользователей' }})
+            {% endif %}
+        </h2>
+        
+        {% if users.items %}
+        <div style="display: flex; gap: 0.5rem;">
+            <button onclick="toggleView('grid')" class="btn btn-secondary" id="grid-btn">
+                <i class="fas fa-th"></i>
+            </button>
+            <button onclick="toggleView('list')" class="btn btn-primary" id="list-btn">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if users.items %}
+    <div id="users-container" class="user-list">
+        {% for user in users.items %}
+        <div class="user-card hover-lift" style="display: flex; align-items: center; gap: 1rem; padding: 1rem;">
+            <div class="user-avatar" style="width: 50px; height: 50px; font-size: 1.2rem; margin-bottom: 0; overflow:hidden;">
+                {% if user.avatar_url %}
+                    <img src="{{ user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                {% else %}
+                    {{ user.username[0].upper() }}
+                {% endif %}
+            </div>
+            
+            <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 style="margin: 0; font-size: 1.1rem;">
+                        <a href="{{ url_for('user_profile', user_id=user.id) }}" style="color: inherit; text-decoration: none;">
+                            {{ user.username }}
+                        </a>
+                    </h3>
+                    
+                    <div class="user-status">
+                        <span class="status-dot {% if not user.is_online %}offline{% endif %}"></span>
+                        {% if user.is_online %}
+                            Онлайн
+                        {% else %}
+                            {{ user.last_seen.strftime('%d.%m.%Y') }}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if user.bio %}
+                <div class="user-bio" style="margin-bottom: 0.5rem;">{{ user.bio[:150] }}{% if user.bio|length > 150 %}...{% endif %}</div>
+                {% endif %}
+                
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    {% if user.experience_level %}
+                    <div style="font-size: 0.8rem; color: #656d76;">
+                        <i class="fas fa-chart-line"></i> {{ user.experience_level }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.looking_for %}
+                    <div style="font-size: 0.8rem; color: #656d76;">
+                        <i class="fas fa-target"></i> {{ user.looking_for }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.skills %}
+                    <div class="user-skills" style="margin: 0;">
+                        {% for skill in user.skills.split(',')[:3] %}
+                        <span class="skill-tag">{{ skill.strip() }}</span>
+                        {% endfor %}
+                        {% if user.skills.split(',')|length > 3 %}
+                        <span class="skill-tag">+{{ user.skills.split(',')|length - 3 }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div>
+                <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-primary">
+                    <i class="fas fa-comments"></i> Написать
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if users.pages > 1 %}
+    <div style="display: flex; justify-content: center; margin-top: 2rem;">
+        <nav style="display: flex; gap: 0.5rem;">
+            {% if users.has_prev %}
+            <a href="{{ url_for('users', page=users.prev_num) }}" class="btn btn-secondary">
+                <i class="fas fa-chevron-left"></i> Назад
+            </a>
+            {% endif %}
+            
+            {% for page_num in users.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num != users.page %}
+                    <a href="{{ url_for('users', page=page_num) }}" class="btn btn-secondary">{{ page_num }}</a>
+                    {% else %}
+                    <span class="btn btn-primary">{{ page_num }}</span>
+                    {% endif %}
+                {% else %}
+                <span class="btn btn-secondary">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if users.has_next %}
+            <a href="{{ url_for('users', page=users.next_num) }}" class="btn btn-secondary">
+                Вперед <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: #656d76;">
+        <i class="fas fa-users" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+        <h3 style="margin-bottom: 1rem; color: #24292f;">Пока нет пользователей</h3>
+        <p style="margin-bottom: 2rem;">Будь первым в сообществе!</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Зарегистрироваться
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+<script>
+function toggleView(view) {
+    const container = document.getElementById('users-container');
+    const gridBtn = document.getElementById('grid-btn');
+    const listBtn = document.getElementById('list-btn');
+    
+    if (view === 'grid') {
+        container.className = 'user-grid';
+        gridBtn.classList.add('btn-primary');
+        gridBtn.classList.remove('btn-secondary');
+        listBtn.classList.add('btn-secondary');
+        listBtn.classList.remove('btn-primary');
+    } else {
+        container.className = 'user-list';
+        listBtn.classList.add('btn-primary');
+        listBtn.classList.remove('btn-secondary');
+        gridBtn.classList.add('btn-secondary');
+        gridBtn.classList.remove('btn-primary');
+    }
+}
+
+function applyFilters() {
+    const search = document.getElementById('search-input').value;
+    const sort = document.getElementById('sort-select').value;
+    
+    let url = new URL(window.location);
+    if (search) url.searchParams.set('q', search);
+    if (sort) url.searchParams.set('sort', sort);
+    url.searchParams.set('page', '1');
+    
+    window.location.href = url.toString();
+}
+
+// Поиск при нажатии Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+    }
+});
+</script>

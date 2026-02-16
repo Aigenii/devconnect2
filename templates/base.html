@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}{{ t('DevConnect - Знакомства для программистов', 'DevConnect - Meet Developers') }}{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}?v=1.0" rel="stylesheet">
+    <link href="{{ url_for('static', filename='animations.css') }}?v=1.0" rel="stylesheet">
+    <link href="{{ url_for('static', filename='themes.css') }}?v=1.0" rel="stylesheet">
+    <link href="{{ url_for('static', filename='advanced.css') }}?v=1.0" rel="stylesheet">
+    <link href="{{ url_for('static', filename='components.css') }}?v=1.0" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-code"></i> DevConnect
+                </a>
+                <nav class="nav">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('index') }}" class="nav-link">
+                            <i class="fas fa-home"></i> {{ t('Главная','Home') }}
+                        </a>
+                        <a href="{{ url_for('freelance_list') }}" class="nav-link">
+                            <i class="fas fa-briefcase"></i> {{ t('Фриланс','Freelance') }}
+                        </a>
+                        <a href="{{ url_for('chat_ai') }}" class="nav-link">
+                            <i class="fas fa-robot"></i> {{ t('AI-чат','AI Chat') }}
+                        </a>
+                        <a href="{{ url_for('search') }}" class="nav-link">
+                            <i class="fas fa-search"></i> {{ t('Поиск','Search') }}
+                        </a>
+                        <a href="{{ url_for('users') }}" class="nav-link">
+                            <i class="fas fa-users"></i> {{ t('Пользователи','Users') }}
+                        </a>
+                        <a href="{{ url_for('chats') }}" class="nav-link">
+                            <i class="fas fa-comments"></i> {{ t('Чаты','Chats') }}
+                        </a>
+                        <a href="{{ url_for('profile') }}" class="nav-link">
+                            <i class="fas fa-user"></i> {{ t('Профиль','Profile') }}
+                        </a>
+                        <a href="{{ url_for('logout') }}" class="btn btn-primary">
+                            <i class="fas fa-sign-out-alt"></i> {{ t('Выйти','Logout') }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> {{ t('Войти','Login') }}
+                        </a>
+                        <a href="{{ url_for('register') }}" class="btn btn-secondary">
+                            <i class="fas fa-user-plus"></i> {{ t('Регистрация','Register') }}
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js" integrity="sha256-SwQG1Pxd0w7wYH5QM8S8tU7M6t0kU6oJ0c9mQH1WqN8=" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='utils.js') }}?v=1.0"></script>
+    <script src="{{ url_for('static', filename='effects.js') }}?v=1.0"></script>
+    <script src="{{ url_for('static', filename='components.js') }}?v=1.0"></script>
+    <script src="{{ url_for('static', filename='script.js') }}?v=1.0"></script>
+</body>
+</html>

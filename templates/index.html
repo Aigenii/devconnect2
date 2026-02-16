@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card fade-in">
+    <div style="text-align: center; padding: 3rem 0;">
+        <h1 style="font-size: 3rem; font-weight: 700; color: white; margin-bottom: 1rem;" class="text-shine animate-bounce">
+            <i class="fas fa-code"></i> DevConnect
+        </h1>
+        <p style="font-size: 1.3rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 2rem;">
+            Найди единомышленников, команду для стартапа или просто друзей-программистов
+        </p>
+        
+        {% if not current_user.is_authenticated %}
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('register') }}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                <i class="fas fa-user-plus"></i> Начать знакомства
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </a>
+        </div>
+        {% else %}
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('search') }}" class="btn btn-primary hover-lift">
+                <i class="fas fa-search"></i> Найти друзей
+            </a>
+            <a href="{{ url_for('users') }}" class="btn btn-secondary hover-lift">
+                <i class="fas fa-users"></i> Все пользователи
+            </a>
+            <a href="{{ url_for('chats') }}" class="btn btn-secondary hover-lift">
+                <i class="fas fa-comments"></i> Мои чаты
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="card fade-in">
+    <h2 style="margin-bottom: 1.5rem; color: #24292f;">
+        <i class="fas fa-users"></i> Познакомься с программистами
+    </h2>
+    
+    {% if users %}
+        <div class="user-grid list-stagger">
+        {% for user in users %}
+        <div class="user-card fade-in hover-lift">
+            <div class="user-avatar" style="overflow:hidden;">
+                {% if user.avatar_url %}
+                    <img src="{{ user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                {% else %}
+                    {{ user.username[0].upper() }}
+                {% endif %}
+            </div>
+            
+            <div class="user-name">{{ user.username }}</div>
+            
+            {% if user.bio %}
+            <div class="user-bio">{{ user.bio[:100] }}{% if user.bio|length > 100 %}...{% endif %}</div>
+            {% endif %}
+            
+            {% if user.skills %}
+            <div class="user-skills">
+                {% for skill in user.skills.split(',')[:3] %}
+                <span class="skill-tag">{{ skill.strip() }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="user-status">
+                <span class="status-dot {% if not user.is_online %}offline{% endif %}"></span>
+                {% if user.is_online %}
+                    Онлайн
+                {% else %}
+                    Был в сети {{ user.last_seen.strftime('%d.%m.%Y') }}
+                {% endif %}
+            </div>
+            
+            <div style="margin-top: 1rem;">
+                <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-primary" style="width: 100%; text-align: center;">
+                    <i class="fas fa-comments"></i> Написать сообщение
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 2rem; color: #656d76;">
+        <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+        <p>Пока нет других пользователей. Будь первым!</p>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="card fade-in">
+    <div style="text-align: center; padding: 2rem 0;">
+        <h2 style="margin-bottom: 1.5rem; color: #24292f;">
+            <i class="fas fa-rocket"></i> Возможности платформы
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+            <div style="text-align: center;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 2rem;">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3 style="margin-bottom: 0.5rem; color: #24292f;">Найди команду</h3>
+                <p style="color: #656d76;">Создавай стартапы с единомышленниками</p>
+            </div>
+            
+            <div style="text-align: center;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 2rem;">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 style="margin-bottom: 0.5rem; color: #24292f;">Общайся</h3>
+                <p style="color: #656d76;">Обсуждай технологии и проекты</p>
+            </div>
+            
+            <div style="text-align: center;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 2rem;">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <h3 style="margin-bottom: 0.5rem; color: #24292f;">Найди друзей</h3>
+                <p style="color: #656d76;">Заводи новые знакомства в IT</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card fade-in">
+    <div style="text-align: center; padding: 2rem 0;">
+        <h2 style="margin-bottom: 1.5rem; color: #24292f;">
+            <i class="fas fa-magic"></i> Демонстрация эффектов
+        </h2>
+        <p style="color: #656d76; margin-bottom: 2rem;">
+            Попробуй интерактивные эффекты и анимации
+        </p>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button onclick="showDemoModal()" class="btn btn-primary hover-lift">
+                <i class="fas fa-window-maximize"></i> Модальное окно
+            </button>
+            <button onclick="showDemoNotification('success')" class="btn btn-secondary hover-lift">
+                <i class="fas fa-check"></i> Уведомление
+            </button>
+            <button onclick="showDemoLoading()" class="btn btn-primary hover-lift">
+                <i class="fas fa-spinner"></i> Загрузка
+            </button>
+            <button onclick="toggleTheme()" class="btn btn-secondary hover-lift">
+                <i class="fas fa-moon"></i> Темная тема
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

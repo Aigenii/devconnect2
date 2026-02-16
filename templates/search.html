@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск пользователей - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: #24292f; margin-bottom: 0.5rem;">
+            <i class="fas fa-search"></i> Поиск программистов
+        </h1>
+        <p style="color: #656d76;">Найди единомышленников по навыкам и интересам</p>
+    </div>
+
+    <!-- Форма поиска -->
+    <form method="GET" class="search-form">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 1rem; align-items: end;">
+            <div class="form-group" style="position: relative;">
+                <label for="q">
+                    <i class="fas fa-user"></i> Поиск по никнейму
+                </label>
+                <input type="text" id="q" name="q" class="form-control" 
+                       placeholder="Введите никнейм..." value="{{ query }}" autocomplete="off">
+                <div id="search-suggestions" style="position: absolute; top: 100%; left: 0; right: 0; z-index: 50; display: none;
+                     background: var(--card-background); backdrop-filter: blur(20px); border: 1px solid var(--card-border);
+                     border-radius: 8px; margin-top: 0.25rem; box-shadow: var(--shadow-medium);
+                "></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="skill">
+                    <i class="fas fa-code"></i> Навык
+                </label>
+                <select id="skill" name="skill" class="form-control">
+                    <option value="">Любой навык</option>
+                    {% for skill in all_skills %}
+                    <option value="{{ skill }}" {% if skill == skill_filter %}selected{% endif %}>
+                        {{ skill }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="experience">
+                    <i class="fas fa-chart-line"></i> Опыт
+                </label>
+                <select id="experience" name="experience" class="form-control">
+                    <option value="">Любой уровень</option>
+                    {% for level in all_experience_levels %}
+                    <option value="{{ level }}" {% if level == experience_filter %}selected{% endif %}>
+                        {{ level }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="looking_for">
+                    <i class="fas fa-target"></i> Цель
+                </label>
+                <select id="looking_for" name="looking_for" class="form-control">
+                    <option value="">Любая цель</option>
+                    {% for goal in all_looking_for %}
+                    <option value="{{ goal }}" {% if goal == looking_for_filter %}selected{% endif %}>
+                        {{ goal }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" style="height: 42px;">
+                    <i class="fas fa-search"></i> Найти
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Быстрые фильтры -->
+    <div style="margin-top: 1.5rem;">
+        <h3 style="color: #24292f; margin-bottom: 1rem;">
+            <i class="fas fa-filter"></i> Быстрые фильтры
+        </h3>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="{{ url_for('search') }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                <i class="fas fa-times"></i> Сбросить
+            </a>
+            <a href="{{ url_for('search', q='', skill='Python') }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                <i class="fab fa-python"></i> Python
+            </a>
+            <a href="{{ url_for('search', q='', skill='JavaScript') }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                <i class="fab fa-js"></i> JavaScript
+            </a>
+            <a href="{{ url_for('search', q='', skill='React') }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                <i class="fab fa-react"></i> React
+            </a>
+            <a href="{{ url_for('search', q='', skill='Node.js') }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                <i class="fab fa-node-js"></i> Node.js
+            </a>
+            <a href="{{ url_for('search', looking_for='Команду для стартапа') }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                <i class="fas fa-rocket"></i> Стартап
+            </a>
+            <a href="{{ url_for('search', looking_for='Ментора') }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                <i class="fas fa-graduation-cap"></i> Ментор
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Результаты поиска -->
+{% if query or skill_filter or experience_filter or looking_for_filter %}
+<div class="card fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="color: #24292f;">
+            <i class="fas fa-users"></i> Результаты поиска
+            {% if users %}
+                ({{ users|length }} {{ 'найден' if users|length == 1 else 'найдено' if users|length < 5 else 'найдено' }})
+            {% endif %}
+        </h2>
+        
+        {% if users %}
+        <div style="display: flex; gap: 0.5rem;">
+            <button onclick="toggleView('grid')" class="btn btn-secondary" id="grid-btn">
+                <i class="fas fa-th"></i>
+            </button>
+            <button onclick="toggleView('list')" class="btn btn-secondary" id="list-btn">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if users %}
+    <div id="users-container" class="user-grid">
+        {% for user in users %}
+        <div class="user-card hover-lift">
+            <div class="user-avatar" style="overflow:hidden;">
+                {% if user.avatar_url %}
+                    <img src="{{ user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                {% else %}
+                    {{ user.username[0].upper() }}
+                {% endif %}
+            </div>
+            
+            <div class="user-name">
+                <a href="{{ url_for('user_profile', user_id=user.id) }}" style="color: inherit; text-decoration: none;">
+                    {{ user.username }}
+                </a>
+            </div>
+            
+            {% if user.bio %}
+            <div class="user-bio">{{ user.bio[:100] }}{% if user.bio|length > 100 %}...{% endif %}</div>
+            {% endif %}
+            
+            {% if user.skills %}
+            <div class="user-skills">
+                {% for skill in user.skills.split(',')[:3] %}
+                <span class="skill-tag">{{ skill.strip() }}</span>
+                {% endfor %}
+                {% if user.skills.split(',')|length > 3 %}
+                <span class="skill-tag">+{{ user.skills.split(',')|length - 3 }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div style="margin-bottom: 1rem;">
+                {% if user.experience_level %}
+                <div style="font-size: 0.8rem; color: #656d76; margin-bottom: 0.25rem;">
+                    <i class="fas fa-chart-line"></i> {{ user.experience_level }}
+                </div>
+                {% endif %}
+                
+                {% if user.looking_for %}
+                <div style="font-size: 0.8rem; color: #656d76; margin-bottom: 0.25rem;">
+                    <i class="fas fa-target"></i> {{ user.looking_for }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="user-status">
+                <span class="status-dot {% if not user.is_online %}offline{% endif %}"></span>
+                {% if user.is_online %}
+                    Онлайн
+                {% else %}
+                    Был в сети {{ user.last_seen.strftime('%d.%m.%Y') }}
+                {% endif %}
+            </div>
+            
+            <div style="margin-top: 1rem;">
+                <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-primary" style="width: 100%; text-align: center;">
+                    <i class="fas fa-comments"></i> Написать сообщение
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: #656d76;">
+        <i class="fas fa-search" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+        <h3 style="margin-bottom: 1rem; color: #24292f;">Ничего не найдено</h3>
+        <p style="margin-bottom: 2rem;">Попробуйте изменить параметры поиска</p>
+        <a href="{{ url_for('search') }}" class="btn btn-primary">
+            <i class="fas fa-refresh"></i> Сбросить фильтры
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<div class="card fade-in">
+    <div style="text-align: center; padding: 3rem; color: #656d76;">
+        <i class="fas fa-search" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+        <h3 style="margin-bottom: 1rem; color: #24292f;">Начните поиск</h3>
+        <p style="margin-bottom: 2rem;">Введите никнейм или выберите фильтры для поиска программистов</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('users') }}" class="btn btn-primary">
+                <i class="fas fa-users"></i> Все пользователи
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-home"></i> На главную
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+<script>
+function toggleView(view) {
+    const container = document.getElementById('users-container');
+    const gridBtn = document.getElementById('grid-btn');
+    const listBtn = document.getElementById('list-btn');
+    
+    if (view === 'grid') {
+        container.className = 'user-grid';
+        gridBtn.classList.add('btn-primary');
+        gridBtn.classList.remove('btn-secondary');
+        listBtn.classList.add('btn-secondary');
+        listBtn.classList.remove('btn-primary');
+    } else {
+        container.className = 'user-list';
+        listBtn.classList.add('btn-primary');
+        listBtn.classList.remove('btn-secondary');
+        gridBtn.classList.add('btn-secondary');
+        gridBtn.classList.remove('btn-primary');
+    }
+}
+
+// Автопоиск при вводе (подсказки)
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('q');
+    const suggestions = document.getElementById('search-suggestions');
+    let timeout;
+
+    function hideSuggestions() {
+        suggestions.style.display = 'none';
+        suggestions.innerHTML = '';
+    }
+
+    function renderSuggestions(items) {
+        if (!items || items.length === 0) {
+            hideSuggestions();
+            return;
+        }
+        suggestions.innerHTML = items.map(u => `
+            <div class="suggestion-item" data-id="${u.id}" style="padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                <div class="user-avatar" style="width: 28px; height: 28px; font-size: 0.8rem; overflow:hidden;">
+                    ${u.avatar_url ? `<img src="${u.avatar_url}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">` : u.avatar}
+                </div>
+                <div style="display:flex; flex-direction: column;">
+                    <span style="font-weight:600; color: var(--text-primary)">${u.username}</span>
+                    ${u.bio ? `<span style="font-size:0.8rem; color: var(--text-secondary)">${u.bio}</span>` : ''}
+                </div>
+            </div>
+        `).join('');
+        suggestions.style.display = 'block';
+
+        Array.from(suggestions.querySelectorAll('.suggestion-item')).forEach(el => {
+            el.addEventListener('click', () => {
+                const id = el.getAttribute('data-id');
+                window.location.href = `{{ url_for('user_profile', user_id=0) }}`.replace('0', id);
+            });
+            el.addEventListener('mouseenter', () => { el.style.background = 'rgba(102,126,234,0.08)'; });
+            el.addEventListener('mouseleave', () => { el.style.background = 'transparent'; });
+        });
+    }
+
+    if (searchInput && suggestions) {
+        document.addEventListener('click', (e) => {
+            if (!suggestions.contains(e.target) && e.target !== searchInput) {
+                hideSuggestions();
+            }
+        });
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const q = this.value.trim();
+            if (q.length < 2) {
+                hideSuggestions();
+                return;
+            }
+            timeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+                    const data = await res.json();
+                    renderSuggestions(data);
+                } catch (e) {
+                    hideSuggestions();
+                }
+            }, 250);
+        });
+    }
+});
+</script>

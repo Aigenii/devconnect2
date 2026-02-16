@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Вакансия — DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+    <h1 style="color:#24292f;">{{ job.title }}</h1>
+    <a href="{{ url_for('freelance_list') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Назад</a>
+  </div>
+  <div style="color:#656d76; margin-top:0.25rem;">
+    Опубликовано {{ job.created_at.strftime('%d.%m.%Y %H:%M') }} • Автор: {{ job.author.username }} • {{ 'Удалёнка' if job.is_remote else (job.location or 'Локация') }}
+  </div>
+</div>
+
+<div class="card fade-in">
+  <div style="display:flex; flex-direction:column; gap:1rem;">
+    <div style="font-size:1rem; color:#24292f; white-space:pre-wrap;">{{ job.description }}</div>
+    {% if job.skills %}
+    <div class="user-skills">
+      {% for s in job.skills.split(',') %}
+      <span class="skill-tag">{{ s.strip() }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; color:#656d76;">
+      <div><i class="fas fa-filter"></i> {{ 'Ищу исполнителя' if job.job_type == 'hire' else 'Ищу работу' }}</div>
+      <div><i class="fas fa-money-bill"></i> {{ job.budget or 'Договорная' }}</div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;">
+  <a href="{{ url_for('chat', user_id=job.author_id) }}" class="btn btn-primary"><i class="fas fa-comments"></i> Написать автору</a>
+</div>
+{% endblock %}

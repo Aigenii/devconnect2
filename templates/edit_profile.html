@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать профиль - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in" style="max-width: 600px; margin: 2rem auto;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: #24292f; margin-bottom: 0.5rem;">
+            <i class="fas fa-edit"></i> Редактировать профиль
+        </h1>
+        <p style="color: #656d76;">Расскажи о себе другим программистам</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="form-group">
+            <label for="bio">
+                <i class="fas fa-user"></i> О себе
+            </label>
+            <textarea id="bio" name="bio" class="form-control" rows="4" 
+                      placeholder="Расскажи о себе, своих интересах и целях...">{{ current_user.bio or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="avatar">
+                <i class="fas fa-image"></i> Фото аватара (PNG, JPG, JPEG, GIF, WEBP)
+            </label>
+            <input id="avatar" name="avatar" type="file" accept="image/*" class="form-control">
+            <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.75rem;">
+                <div class="user-avatar" style="width: 60px; height: 60px; font-size:1.2rem;">
+                    {% if current_user.avatar_url %}
+                        <img src="{{ current_user.avatar_url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                    {% else %}
+                        {{ current_user.username[0].upper() }}
+                    {% endif %}
+                </div>
+                <span style="color:#656d76; font-size:0.9rem;">Текущее фото</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="skills">
+                <i class="fas fa-code"></i> Навыки (через запятую)
+            </label>
+            <input type="text" id="skills" name="skills" class="form-control" 
+                   placeholder="Python, JavaScript, React, Node.js, Django..." 
+                   value="{{ current_user.skills or '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="experience_level">
+                <i class="fas fa-chart-line"></i> Уровень опыта
+            </label>
+            <select id="experience_level" name="experience_level" class="form-control">
+                <option value="">Выберите уровень</option>
+                <option value="Новичок" {% if current_user.experience_level == 'Новичок' %}selected{% endif %}>Новичок</option>
+                <option value="Junior" {% if current_user.experience_level == 'Junior' %}selected{% endif %}>Junior</option>
+                <option value="Middle" {% if current_user.experience_level == 'Middle' %}selected{% endif %}>Middle</option>
+                <option value="Senior" {% if current_user.experience_level == 'Senior' %}selected{% endif %}>Senior</option>
+                <option value="Lead" {% if current_user.experience_level == 'Lead' %}selected{% endif %}>Lead</option>
+                <option value="Архитектор" {% if current_user.experience_level == 'Архитектор' %}selected{% endif %}>Архитектор</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="looking_for">
+                <i class="fas fa-search"></i> Что ищешь?
+            </label>
+            <select id="looking_for" name="looking_for" class="form-control">
+                <option value="">Выберите цель</option>
+                <option value="Команду для стартапа" {% if current_user.looking_for == 'Команду для стартапа' %}selected{% endif %}>Команду для стартапа</option>
+                <option value="Собеседников для изучения" {% if current_user.looking_for == 'Собеседников для изучения' %}selected{% endif %}>Собеседников для изучения</option>
+                <option value="Друзей-программистов" {% if current_user.looking_for == 'Друзей-программистов' %}selected{% endif %}>Друзей-программистов</option>
+                <option value="Ментора" {% if current_user.looking_for == 'Ментора' %}selected{% endif %}>Ментора</option>
+                <option value="Стажера" {% if current_user.looking_for == 'Стажера' %}selected{% endif %}>Стажера</option>
+                <option value="Партнера по проектам" {% if current_user.looking_for == 'Партнера по проектам' %}selected{% endif %}>Партнера по проектам</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-secondary" style="flex: 1; font-size: 1.1rem; padding: 1rem;">
+                <i class="fas fa-save"></i> Сохранить изменения
+            </button>
+            <a href="{{ url_for('profile') }}" class="btn btn-primary" style="flex: 1; text-align: center; font-size: 1.1rem; padding: 1rem;">
+                <i class="fas fa-times"></i> Отмена
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

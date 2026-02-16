@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in" style="max-width: 400px; margin: 2rem auto;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: #24292f; margin-bottom: 0.5rem;">
+            <i class="fas fa-sign-in-alt"></i> Вход
+        </h1>
+        <p style="color: #656d76;">Добро пожаловать обратно!</p>
+    </div>
+
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="form-group">
+            <label for="login">
+                <i class="fas fa-user"></i> Email или никнейм
+            </label>
+            <input type="text" id="login" name="login" class="form-control" required 
+                   placeholder="Введите email или никнейм">
+        </div>
+
+        <div class="form-group">
+            <label for="password">
+                <i class="fas fa-lock"></i> Пароль
+            </label>
+            <input type="password" id="password" name="password" class="form-control" required 
+                   placeholder="Введите пароль">
+        </div>
+
+        <button type="submit" class="btn btn-secondary" style="width: 100%; font-size: 1.1rem; padding: 1rem;">
+            <i class="fas fa-sign-in-alt"></i> Войти
+        </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <p style="color: #656d76;">
+            Нет аккаунта? 
+            <a href="{{ url_for('register') }}" style="color: #667eea; text-decoration: none; font-weight: 500;">
+                Зарегистрироваться
+            </a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

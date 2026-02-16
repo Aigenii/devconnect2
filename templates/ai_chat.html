@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('AI-чат','AI Chat') }} - DevConnect{% endblock %}
+
+{% block content %}
+<div class="card fade-in" style="max-width: 960px; margin: 0 auto;">
+  <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
+      <i class="fas fa-arrow-left"></i> {{ t('На главную','Home') }}
+    </a>
+    <div class="user-avatar" style="width:50px; height:50px; font-size:1.2rem;">
+      AI
+    </div>
+    <div>
+      <h2 style="color:#24292f; margin-bottom:0.25rem;">{{ t('AI-чат','AI Chat') }}</h2>
+      <div style="font-size:0.9rem; color:#656d76;">{{ t('Темы: программирование, фриланс, DevConnect','Topics: programming, freelance, DevConnect') }}</div>
+    </div>
+  </div>
+
+  <div class="chat-container" style="height: 500px;">
+    <div class="chat-main">
+      <div style="display:flex; justify-content:flex-end; gap:.5rem; margin-bottom:.5rem; align-items:center;">
+        <label style="display:flex; align-items:center; gap:.4rem; font-size:.9rem; color:#656d76;">
+          <input id="ai-auto" type="checkbox"> {{ t('Авто','Auto') }}
+        </label>
+        <button id="ai-continue" class="btn btn-secondary" type="button"><i class="fas fa-forward"></i> {{ t('Продолжить','Continue') }}</button>
+        <button id="ai-reset" class="btn btn-secondary" type="button"><i class="fas fa-broom"></i> {{ t('Очистить диалог','Clear conversation') }}</button>
+      </div>
+      <div class="chat-messages" id="ai-messages"></div>
+
+      <div class="chat-input">
+        <form id="ai-form">
+          <textarea id="ai-input" placeholder="{{ t('Напишите сообщение...','Type a message...') }}" rows="1" style="resize:none; overflow:hidden;" autocomplete="off"></textarea>
+          <button class="btn btn-primary" type="submit">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- i18n strings for JS (avoid Jinja inside JS) -->
+  <div id="ai-i18n"
+       data-cleared="{{ t('Диалог очищен. Чем помочь сейчас?','Conversation cleared. How can I help now?') }}"
+       data-failed="{{ t('Извините, не удалось получить ответ.','Sorry, failed to get a reply.') }}"
+       data-reqerr="{{ t('Произошла ошибка при запросе.','An error occurred while requesting.') }}"
+       data-greeting="{{ t('Привет! Я DevBot. Обсуждаем: программирование, фриланс и ваш сайт DevConnect. Чем помочь?','Hi! I am DevBot. We can discuss programming, freelance, and your DevConnect site. How can I help?') }}">
+  </div>
+</div>
+
+<script>
+(function(){
+  const box = document.getElementById('ai-messages');
+  const form = document.getElementById('ai-form');
+  const input = document.getElementById('ai-input');
+  const resetBtn = document.getElementById('ai-reset');
+  const contBtn = document.getElementById('ai-continue');
+  const autoChk = document.getElementById('ai-auto');
+  const i18nEl = document.getElementById('ai-i18n');
+  const I18N = {
+    cleared: i18nEl?.dataset?.cleared || 'Conversation cleared. How can I help now?',
+    failed: i18nEl?.dataset?.failed || 'Sorry, failed to get a reply.',
+    reqerr: i18nEl?.dataset?.reqerr || 'An error occurred while requesting.',
+    greeting: i18nEl?.dataset?.greeting || 'Hi! I am DevBot. We can discuss programming, freelance, and your DevConnect site. How can I help?'
+  };
+  let autoTimer = null;
+  let pending = false;
+
+  function timeNow(){
+    const d = new Date();
+    return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }
+
+  function add(role, text){
+    const wrap = document.createElement('div');
+    wrap.className = 'message ' + (role === 'user' ? 'own' : '');
+    wrap.innerHTML = '<div class="message-content">' + escapeHtml(text) + '\n' +
+      '<div class="message-time">' + timeNow() + '</div>' +
+      '</div>';
+    box.appendChild(wrap);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+  function autoresize(){ input.style.height='auto'; input.style.height=Math.max(44, input.scrollHeight)+'px'; }
+  input.addEventListener('input', autoresize); autoresize();
+
+  resetBtn.addEventListener('click', async ()=>{
+    try{
+      await fetch('/api/ai_reset', {method:'POST'});
+      box.innerHTML = '';
+      add('ai', I18N.cleared);
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+      autoChk.checked = false;
+    }catch(e){ /* noop */ }
+  });
+
+  async function suggestNext(){
+    if (pending) return; pending = true; contBtn.disabled = true;
+    try{
+      const res = await fetch('/api/ai_suggest', { method: 'POST' });
+      const data = await res.json();
+      if (data && data.reply) { add('ai', data.reply); }
+    }catch(e){ /* noop */ }
+    finally { pending = false; contBtn.disabled = false; }
+  }
+
+  contBtn.addEventListener('click', suggestNext);
+
+  autoChk.addEventListener('change', ()=>{
+    if (autoChk.checked){
+      if (autoTimer) clearInterval(autoTimer);
+      autoTimer = setInterval(()=>{ suggestNext(); }, 3000);
+    } else {
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    }
+  });
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const text = input.value.trim();
+    if(!text) return;
+    add('user', text);
+    input.value=''; autoresize();
+    try{
+      const res = await fetch('/api/ai_reply', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({content: text})
+      });
+      const data = await res.json();
+      if (data && data.reply) {
+        add('ai', data.reply);
+      } else if (data && data.status === 'error' && data.error === 'cfg_missing') {
+        add('ai', 'AI не сконфигурирован на сервере (cfg_missing). Перезапустите сервер после заполнения instance/.env или проверьте переменные: AI_PROVIDER, DEEPSEEK_API_KEY/OPENAI_API_KEY/AZURE_OPENAI_KEY.');
+      } else {
+        add('ai', I18N.failed);
+      }
+    }catch(err){ add('ai', I18N.reqerr); }
+  });
+
+  // Приветственное сообщение
+  add('ai', I18N.greeting);
+})();
+</script>
+{% endblock %}
